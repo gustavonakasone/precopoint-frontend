@@ -1,4 +1,4 @@
-# precopoint_frontend
+# preco_point_vue
 
 ## Project setup
 ```

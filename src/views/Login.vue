@@ -71,7 +71,7 @@
     </body>
 </template>
 
-<script>
+<script lang="ts">
     import RegUsuario from '../components/RegistrarUsuario.vue'
     import RegFornecedor from '../components/RegistrarFornecedor.vue'
     import Teste from './Teste.vue'

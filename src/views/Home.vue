@@ -30,7 +30,7 @@
            
 </template>
 
-<script>
+<script lang="ts">
     import NavBar from '../components/HeaderTemplate.vue'
     
     export default ({

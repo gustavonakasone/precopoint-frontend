@@ -53,7 +53,7 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
     import Navbar from '../components/HeaderTemplate.vue'
     export default ({
         name: "ListaFornecedor",

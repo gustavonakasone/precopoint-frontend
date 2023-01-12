@@ -77,7 +77,7 @@
         </div>
 </template>
 
-<script>
+<script lang="ts">
     import Navbar from "../components/HeaderTemplate.vue"
     export default({
         // eslint-disable-next-line vue/no-parsing-error
