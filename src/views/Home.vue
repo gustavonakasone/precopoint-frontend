@@ -6,9 +6,9 @@
                 <div class="text-center mb-4 mt-4"> <span class="h1 text-warning fw-bold text-uppercase" >Categoria</span></div>
                 <hr>
                 <!--agrupamento dos card - Realizar lógica para criar 5 cards por grupo-->
-                <div class="row teste">
+                <div class="row">
                     
-                    <!--card-->
+                    
                     <div class="col-xl-3 mb-2 ">
                         <div class="card shadow me-1" style="width:14rem" >
                             <div class="container text-center">
@@ -25,18 +25,22 @@
                     </div>
                     
                 </div>
+                
             </div>
            
 </template>
 
 <script>
     import NavBar from '../components/HeaderTemplate.vue'
+    
     export default ({
         // eslint-disable-next-line vue/multi-word-component-names
         name: "Home",
         components: {
-            NavBar
+            NavBar            
         }
+        
+        
     })
 
 </script>

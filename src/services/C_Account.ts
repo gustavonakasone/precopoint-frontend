@@ -28,12 +28,4 @@ class ClientAccountService{
         return axios.delete(URL)
     }
 }
-export default new ClientAccountService({
-    name: "C_Account",
-    methods:{
-        validaUsuarios() {
-            console.log("validado")
-        }
-    }
-    
-})
+export default new ClientAccountService()

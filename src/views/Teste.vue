@@ -12,11 +12,11 @@
        props:{
             email: {
                 type: String,
-                default:""
+                default:"3"
             },
             password: {
                 type: String,
-                default: ""
+                default: "3"
             }
        },
        methods: {

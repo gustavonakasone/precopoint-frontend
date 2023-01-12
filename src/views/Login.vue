@@ -75,7 +75,6 @@
     import RegUsuario from '../components/RegistrarUsuario.vue'
     import RegFornecedor from '../components/RegistrarFornecedor.vue'
     import Teste from './Teste.vue'
-    import response from '../services/C_Account.js'
     export default({
         // eslint-disable-next-line vue/multi-word-component-names
         name: "Login",
@@ -95,7 +94,7 @@
         },
         methods: {
             validaUsuario(){
-                console.log(response.getClientAccounts())
+                console.log("teste")
                 
             },
             esqueciSenha(){
