@@ -8,7 +8,7 @@
                                                 <!--Left-Content-->
                 <!----------------------------------------------------------------------------------------------------> 
                 <div class="col-md-9 col-lg-6 col-xl-5">
-                    <img src="../assets/rafiki_login.svg" class="img-fluid" alt="Sample image">
+                    <img src="@/assets/rafiki_login.svg" class="img-fluid" alt="Sample image">
                 </div>
 
                 <!---------------------------------------------------------------------------------------------------->
@@ -17,19 +17,19 @@
                 <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
                     
                 
-                    <form method="">
+                    <form method="post" @submit.prevent="validaUsuario()">
                         <hr class="fw-bold text-danger">
                         <div class="h1">Preço Point</div>
                         <hr class="text-danger">
                         <!--E-mail input-->
                         <div class="form-outline mb-4">
                             <label class="form-label h6" for="email-input">E-mail address</label>
-                            <input type="email" id="email-input" class="form-control form-control-lg" placeholder="Enter a valid email address" v-model="email"/>
+                            <input v-model="email" type="email" id="email-input" class="form-control form-control-lg" placeholder="Enter a valid email address" />
                         </div>
                         <!--Password input-->
                         <div class="form-outline mb-4">
                             <label class="form-label h6" for="password-input">Password</label>
-                            <input type="email" id="password-input" class="form-control form-control-lg" placeholder="Type the password" v-model="password"/>
+                            <input v-model="senha" type="password" id="password-input" class="form-control form-control-lg" placeholder="Type the password" />
                         </div>
                         <!--Checkbox and Forgot Password-->
                         <div class="d-flex justify-content-between align-items-center">
@@ -47,7 +47,7 @@
                         <div class="text-center text-lg-start mt-4 pt-2">
                             <!--button-->
                             <div class="d-grid gap-2">
-                                <button class="btn btn-primary btn-primary shadow" type="submit" @click="validaUsuario">Sign in</button>
+                                <button class="btn btn-primary btn-primary shadow" type="submit">Sign in</button>
                                 
                             </div>
                             <!--register-->
@@ -63,7 +63,7 @@
                             </div>
                         </div>
                     </form>
-                    <Teste :email="email" :password="password"/>
+                    <Teste :email="email" :password="senha"/>
                 </div>
             </div>
         </div>
@@ -72,16 +72,20 @@
 </template>
 
 <script lang="ts">
-    import RegUsuario from '../components/RegistrarUsuario.vue'
-    import RegFornecedor from '../components/RegistrarFornecedor.vue'
+    import { defineComponent } from 'vue'
+    import RegUsuario from '../components/modal/RegistrarUsuarioModal.vue'
+    import RegFornecedor from '../components/modal/RegistrarFornecedorModal.vue'
     import Teste from './Teste.vue'
-    export default({
+    import api from '@/http/index'
+    import router from '@/router'
+
+    export default defineComponent({
         // eslint-disable-next-line vue/multi-word-component-names
         name: "Login",
         data(){
             return{
                 email: '',
-                password: ''
+                senha: ''
 
             }
         },
@@ -93,8 +97,15 @@
            
         },
         methods: {
-            validaUsuario(){
-                console.log("teste")
+            
+            async validaUsuario(){
+                await api.post('auth', {'email':this.email, 'senha':this.senha})
+                    .then((response) => {
+                        console.log(response.data),
+                        router.push('/')
+
+                    })
+                    .catch((err) => console.log("Erro: "+ err))
                 
             },
             esqueciSenha(){

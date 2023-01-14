@@ -35,6 +35,12 @@
                                 <li><a class="dropdown-item" href="/3">Lista 3</a></li>
                             </ul>
                         </li>
+                        <li class="nav-item">
+                            <div class="d-flex">
+                                <input class="form-control me-2" type="search" placeholder="Pesquisar produto..." aria-label="Search">
+                                <button class="btn btn-outline-warning" >Pesquisar</button>
+                            </div>
+                        </li>
                     </ul>
                     <div class="dropdown pe-4">
                         <a href="" class=" nav-link nav-item dropdown-toggle hover" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
