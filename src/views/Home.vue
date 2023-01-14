@@ -50,8 +50,8 @@ export default defineComponent({
         this.getProdutos();
     },
     methods: {
-        getProdutos() {
-            api.get("produto/list-produto")
+        async getProdutos() {
+            await api.get("produto/list-produto")
                 .then((response) => this.produtos = response.data)
                 .catch((err) => console.log("Erro: " + err));
         }
