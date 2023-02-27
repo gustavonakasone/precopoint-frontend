@@ -11,9 +11,13 @@
                 
                 <th scope="col" >
                     <img src="../assets/user.png" style="width: 40px; height: 40px; margin-right: 10px;">
-                    <label style="display: inline-block;">{{ produto.descricao }}</label>
+                    <label style="display: inline-block;">Nome da Empresa</label>
                 </th>
-                <th scope="col" style="text-align: right">R$ {{ produto.preco }}</th>
+                <th scope="col" style="text-align: right">R$ {{ Number(produto.preco).toLocaleString('pt-BR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                        useGrouping: true
+                        }) }}</th>
             </tbody>
             <button @click="comparaLista()"></button>
         </table>

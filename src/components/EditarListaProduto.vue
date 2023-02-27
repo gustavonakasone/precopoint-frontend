@@ -27,7 +27,11 @@
                                         <td ><img  v-bind:src="produto?.imagem" width="30" height="30" ></td>
                                         <td style="align-items: left">{{ produto?.produto }}</td>
                                         <td style="align-items: left">{{ produto?.descricao }}</td>
-                                        <td>R$ {{ produto?.preco }}</td>
+                                        <td>R$ {{ (Number(produto?.preco)).toLocaleString('pt-BR', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                            useGrouping: true
+                                            }) }}</td>
                                         <td>R$ {{ valorTotal }}</td>
                                     </tr>  
                                 </tbody>
@@ -35,7 +39,8 @@
                             <button type="button" class="btn" @click="removeProduto()">-</button>
                             <input type="text" class="text-center" v-model="quantidade"/>
                             <button type="button" class="btn" @click="addProduto()">+</button>
-                            <button class="update-button " >Atualizar</button>
+                            <button type="button" class="update-button" @click="emitirQuantidade"  data-bs-dismiss="modal" aria-label="Close">Atualizar</button>
+
                         </div>
                         
                     </div>
@@ -52,6 +57,7 @@ import { defineComponent ,PropType } from 'vue';
     
     export default defineComponent({
         name: "EditarListaProduto",
+        emits:["editar-quantidade"],
         props:{
             produto: Object as PropType<IProduto>
             
@@ -66,7 +72,11 @@ import { defineComponent ,PropType } from 'vue';
         },
         computed:{
             valorTotal(){
-                return Number(this.quantidade) * Number(this.produto?.preco)
+                return (Number(this.quantidade) * Number(this.produto?.preco)).toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+                useGrouping: true
+                });
             }
         },
         methods: {
@@ -75,6 +85,9 @@ import { defineComponent ,PropType } from 'vue';
             },
             removeProduto(){
                 this.quantidade -= 1
+            },
+            emitirQuantidade() {
+                this.$emit('editar-quantidade', Math.round(this.quantidade))
             }
             
         },

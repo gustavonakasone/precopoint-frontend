@@ -30,15 +30,17 @@
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="/1" >Lista 1</a></li>
-                                <li><a class="dropdown-item" href="/2" >Lista 2</a></li>
+                                <li><a class="dropdown-item" href="/ " >Lista 2</a></li>
                                 <!-- <li><hr class="dropdown-divider"></li> -->
                                 <li><a class="dropdown-item" href="/3">Lista 3</a></li>
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <div class="d-flex">
-                                <input class="form-control me-2" type="search" placeholder="Pesquisar produto..." aria-label="Search">
-                                <button class="btn btn-outline-warning" >Pesquisar</button>
+                            <div class="d-flex form-group">
+                                <input class="form-control me-2" type="text" placeholder="Pesquisar produto..." v-model="searchTerm" aria-label="Search">
+                                <button class="btn btn-outline-warning" @click="pesquisar">Pesquisar</button>
+                            
+                 
                             </div>
                         </li>
                     </ul>
@@ -67,9 +69,19 @@ import { defineComponent } from "vue"
 
     export default defineComponent({
         name: "HeaderTemplate",
+        emits: ['search'],
         data () {
             return{
-                categoria: "categoria"
+                categoria: "categoria",
+                searchTerm: ""
+            }
+        },
+        methods:{
+            pesquisar(){
+                console.log(window.location.pathname)
+                if (window.location.pathname == "/"){
+                    this.$emit("search", this.searchTerm)
+                }
             }
         }
     })

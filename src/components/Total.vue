@@ -10,7 +10,11 @@
         <tbody class="table-light table-hover text-center">
             <tr>
                 <td>{{ quantidadeProdutos }}</td>
-                <td>R$ {{ totalProdutos.toFixed(2) }}</td>
+                <td>R$ {{ total.toLocaleString('pt-BR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                        useGrouping: true
+                        }) }}</td>
             </tr>
         </tbody>
     </table>
@@ -40,6 +44,13 @@
                 this.quantidadeProdutos += element.quantidade;
                 this.totalProdutos += element.quantidade * Number(element.preco);
             });
+        },
+        computed: {
+        total() {
+            return this.produtos.reduce((total, produto) => {
+                return total + Number(produto.preco) * produto.quantidade;
+            }, 0);
+        }
         },
         methods: {
 

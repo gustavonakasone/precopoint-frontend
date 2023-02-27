@@ -17,7 +17,7 @@
         <div class="container">
             <div class="row">
             <div class="col-3">
-                <span class="h2 fw-bold">Descricão da Lista</span>
+                <span class="h2 fw-bold">Descrição da Lista</span>
             </div>
             <div class="col-4"></div>
                 <div class="col-5 d-flex justify-content-end">
@@ -38,7 +38,7 @@
                         <th scope="col">#</th>
                         <th scope="col">Imagem</th>
                         <th scope="col">Produto</th>
-                        <th scope="col">Detalhe</th>
+                        <th scope="col">Detalhes</th>
                         <th scope="col" style="width:12.5%">Quantidade</th>
                         <th scope="col">Valor</th>
                         <th scope="col">Alterar</th>
@@ -48,12 +48,16 @@
                     <tr class="table-light table-hover text-center">
                         <th scope="row">{{ index + 1 }}</th>
                         <td><img v-bind:src="produto.imagem" width="30" height="30"></td>
-                        <td>{{ produto.produto }}</td>
+                        <td style="text-align:left">{{ produto.produto }}</td>
                         <td>{{ produto.descricao }}</td>
                         <td>{{ produto.quantidade }}</td>
-                        <td>R$ {{ produto.preco }}</td>
+                        <td>R$ {{ (Number(produto.preco) * produto.quantidade).toLocaleString('pt-BR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                        useGrouping: true
+                        }) }}</td>
                         <td>
-                        <EditarListaProduto :produto="produto"  />
+                        <EditarListaProduto :produto="produto" @editar-quantidade="atualizarQuantidade(1 ,produto.id, $event)" />
                         </td>
                     </tr>
                     </tbody>
@@ -97,45 +101,50 @@ export default defineComponent({
         EditarListaProduto,
         Total
     },
+    props: {
+        id: Number
+    },
     data() {
         return {
 
             listaProdutos: [{
                 id: 1,
-                produto: "string",
-                preco: "20.00",
+                produto: "Chocolate Kit Kat ao Leite",
+                preco: "3.99",
                 quantidade: 10,
                 imagem: "https://d3o3bdzeq5san1.cloudfront.net/thumbs/290/289082.jpg",
-                descricao: "String",
-                marcaProduto: "Teste2"
+                descricao: "41g",
+                marcaProduto: "Carrefour"
             }, {
                 id: 2,
-                produto: "drng",
-                preco: "30.50",
+                produto: "Bis Xtra Chocolate ao Leite",
+                preco: "3.99",
                 quantidade: 5,
-                imagem: "String",
-                descricao: "String",
-                marcaProduto: "Teste3"
+                imagem: "https://images-americanas.b2w.io/produtos/01/00/img/89818/4/89818428_1GG.jpg",
+                descricao: "45g",
+                marcaProduto: "Americanas"
             },
             {
                 id: 3,
-                produto: "string",
-                preco: "40.00",
+                produto: "Fini Dentaduras",
+                preco: "6.99",
                 quantidade: 10,
-                imagem: "String",
-                descricao: "String",
-                marcaProduto: "Teste3"
+                imagem: "https://images-americanas.b2w.io/produtos/01/00/img/6889/6/6889656_1GG.jpg",
+                descricao: "90g",
+                marcaProduto: "FiniStore"
             }] as IProduto[],
             searchTerm: '',
-            filteredList: [] as IProduto[]
+            filteredList: [] as IProduto[],
+            dadoRecebido: null
         }
     },
-    created() {
+    async created() {
         
         this.filteredList = this.listaProdutos;
         
     },
     computed: {
+        
     },
     methods: {
         
@@ -159,19 +168,27 @@ export default defineComponent({
             }
         },
         async recebeLista(){
-                await api.get('produto/list-produto', {})
-                    .then((response) => {
-                        console.log(response.data),
-                        router.push('/')
-
-                    })
-                    .catch((err) => console.log("Erro: "+ err))
-                
+            try {
+            const response = await fetch('http://localhost:8080/listaProdutos/${id}')
+            const data = await response.json()
+                this.listaProdutos = data
+            } catch (error) {
+            console.error(error)
+            }
         },
+        atualizarQuantidade(id: number, index: number, novaQuantidade: number) {
+            index = index - 1
+            const produto = this.filteredList[index]
+            produto.quantidade = novaQuantidade
+                
+            this.listaProdutos[index].quantidade = produto.quantidade
+            this.filteredList[index].quantidade = produto.quantidade
+            
+        }
     }
         
 
-})
+    })
 </script>
 <style scoped>
     th, td {
