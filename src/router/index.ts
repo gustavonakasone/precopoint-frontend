@@ -1,3 +1,4 @@
+
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Home from '../views/Home.vue'
 import ListaUsuario from '../views/ListaUsuario.vue'
@@ -8,6 +9,7 @@ import EditarUsuario from '../views/EditarUsuario.vue'
 import EditarFornecedor from '../views/EditarFornecedor.vue'
 import AdicionarProduto from '../views/AdicionarProduto.vue'
 import { RouteMeta } from '@/interfaces/RouteMeta'
+
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -24,7 +26,8 @@ const routes: Array<RouteRecordRaw> = [
     component: ListaUsuario,
     meta: {
       title: 'Suas listas'
-    }
+    },
+    
   },
   {
     path: '/login',
@@ -40,7 +43,8 @@ const routes: Array<RouteRecordRaw> = [
     component: ListaProduto,
     meta: {
       title: 'Sua lista'
-    } 
+    },
+    props: true
   },
   {
     path: '/produtos-fornecedor',
@@ -48,7 +52,7 @@ const routes: Array<RouteRecordRaw> = [
     component: ListaFornecedor,
     meta: {
       title: 'Seus produtos'
-    } 
+    }
   },
   {
     path:'/editar-usuario',

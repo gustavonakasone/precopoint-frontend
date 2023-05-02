@@ -17,23 +17,31 @@
                             <a class="nav-link dropdown-toggle hover" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Categoria
                             </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="/1" >Categoria 1</a></li>
-                                <li><a class="dropdown-item" href="/2" >Categoria 2</a></li>
-                                <!-- <li><hr class="dropdown-divider"></li> -->
-                                <li><a class="dropdown-item" href="/3">Categoria 3</a></li>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown" v-if="categorias.length != 0">
+                                <li v-for="(categoria, index) in categorias" :key="index" >
+                                    <router-link class="dropdown-item" :to="`/${categoria}`"> {{ categoria }}</router-link>
+                                </li>
+                            </ul>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown" v-if="categorias.length == 0">
+                                <li class="text-center">
+                                  <label>Sem Categorias</label>
+                                </li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown  pe-3">
                             <a class="nav-link dropdown-toggle hover" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Suas listas
                             </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="/1" >Lista 1</a></li>
-                                <li><a class="dropdown-item" href="/ " >Lista 2</a></li>
-                                <!-- <li><hr class="dropdown-divider"></li> -->
-                                <li><a class="dropdown-item" href="/3">Lista 3</a></li>
-                            </ul>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown" v-if="listas.length != 0">
+                                <li v-for="(item, index) in listas" :key="index">
+                                    <router-link class="dropdown-item" :to="`/lista-de-produtos/`" v-on:click="carregarListaProdutos((item.id).toString())"> {{ item.nome }}</router-link>
+                                </li>
+                            </ul>   
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown" v-if="listas.length == 0">
+                                <li class="text-center">
+                                  <label>Sem Listas</label>
+                                </li>
+                            </ul>    
                         </li>
                         <li class="nav-item">
                             <div class="d-flex form-group">
@@ -65,24 +73,82 @@
 </template>
 
 <script lang="ts">
+import axios from "axios"
+import Cookies from "js-cookie"
 import { defineComponent } from "vue"
-
+import ILista from "../interfaces/ILista"
     export default defineComponent({
         name: "HeaderTemplate",
         emits: ['search'],
+        
         data () {
             return{
-                categoria: "categoria",
-                searchTerm: ""
+                searchTerm: "",
+                listas: [] as ILista[],
+                categorias:[]
             }
         },
+
+        created(){
+            this.getListas()
+            this.getCategorias()
+        },
+
         methods:{
-            pesquisar(){
-                console.log(window.location.pathname)
-                if (window.location.pathname == "/"){
-                    this.$emit("search", this.searchTerm)
+            carregarListaProdutos(id : string){
+                Cookies.set('lista', id , {secure:true, httpOnly: false})
+            },
+
+            pesquisar() {
+            
+                if (window.location.pathname === "/") {
+                    // Se o usuário estiver na página Home
+                    this.$emit("search", this.searchTerm);
+                } else {
+                    // Se o usuário não estiver na página Home
+                    this.$router.push("/")
+                    .then(() => {
+                        this.$emit("search", this.searchTerm);
+                    });
                 }
+
+            },
+
+            async getListas(){
+                try {
+                    const token = Cookies.get("token")
+                    const headers = {
+                        'Authorization': `Bearer ${token}`
+                    };
+
+                    axios.post('http://localhost:8080/lista/getlista-consumidor', {nome:"Otavio Quirino", email : "otavio@gmail.com"}, { headers })
+                    .then(response => {
+                        const data = response.data;
+                        console.log(data);
+                        this.listas = data;
+                    })
+                    .catch(error => {
+                        console.log('Erro:', error);
+                    });
+                }
+                catch{
+                    console.log("Erro ao carregar lista.")
+                }
+            },
+            
+            async getCategorias() {
+            
+                await axios.get("https://localhost:8080/lista/getlista-categoria", {
+                    headers: {
+                    Authorization: `Bearer ${Cookies.get('token')}`
+                    }
+                })
+                .then((response) => this.categorias = response.data)
+                .catch((err) => console.log("Erro: " + err));
             }
+      
+
+
         }
     })
 </script>
