@@ -9,7 +9,8 @@
                     <div class="text-center mx-auto text-uppercase"> 
                     <span class="h1 text-warning fw-bold">listas de produtos</span>
                     </div>
-                    <button type="button" class="btn btn-dark hover mb-2" >Baixar Lista</button>
+                    <button type="button" class="btn btn-dark hover mb-2" :disabled="listaProdutos.length === 0">Baixar Lista</button>
+
                 </div>
             </div>
         </div>
@@ -18,8 +19,10 @@
             <div class="row">
             <div class="col-3">
                 <span class="h2 fw-bold">Descrição da Lista</span>
+                
             </div>
             <div class="col-4"></div>
+                
                 <div class="col-5 d-flex justify-content-end">
                     <div class="form-group" style="display: flex">
                         <input type="text" class="form-control mr-2" style="flex: 2;" v-model="searchTerm">
@@ -31,8 +34,9 @@
         <hr>
         <div class="row">
             <div class="tabela col-12 col-md-8">
+                
                 <form>
-                <table class="table table-bordered">
+                <table class="table table-bordered" >
                     <thead class="table-dark text-center">
                     <tr>
                         <th scope="col">#</th>
@@ -44,31 +48,40 @@
                         <th scope="col">Alterar</th>
                     </tr>
                     </thead>
-                    <tbody v-for="(produto, index) in filteredList" :key="index">
-                    <tr class="table-light table-hover text-center">
-                        <th scope="row">{{ index + 1 }}</th>
-                        <td><img v-bind:src="produto.imagem" width="30" height="30"></td>
-                        <td style="text-align:left">{{ produto.produto }}</td>
-                        <td>{{ produto.descricao }}</td>
-                        <td>{{ produto.quantidade }}</td>
-                        <td>R$ {{ (Number(produto.preco) * produto.quantidade).toLocaleString('pt-BR', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                        useGrouping: true
-                        }) }}</td>
-                        <td>
-                        <EditarListaProduto :produto="produto" @editar-quantidade="atualizarQuantidade(1 ,produto.id, $event)" />
-                        </td>
-                    </tr>
-                    </tbody>
+                    <tbody v-if="filteredList.length > 0">
+                        <tr v-for="(produto, index) in itemsToShow" :key="index" class="table-light table-hover text-center">
+                          <th scope="row">{{ index + 1 }}</th>
+                          <td><img v-bind:src="produto.imagem" width="30" height="30"></td>
+                          <td style="text-align:left">{{ produto.produto }}</td>
+                          <td>{{ produto.descricao }}</td>
+                          <td>{{ produto.quantidade }}</td>
+                          <td>R$ {{ (Number(produto.preco) * produto.quantidade).toLocaleString('pt-BR', {
+                                          minimumFractionDigits: 2,
+                                          maximumFractionDigits: 2,
+                                          useGrouping: true
+                                        }) }}
+                          </td>
+                          <td>
+                            <EditarListaProduto :produto="produto" @editar-quantidade="atualizarQuantidade(1 ,produto.id, $event)" />
+                          </td>
+                        </tr>
+                      </tbody>
+                      <tbody v-else>
+                        <tr>
+                          <td colspan="7" class="text-center">Nenhum produto encontrado</td>
+                        </tr>
+                      </tbody>
                     
                 </table>
                 <Total :produtos="listaProdutos"/>
+                
+                <Pagination :currentPage="currentPage" :totalItems="totalItems" :itemsPerPage="parseInt(itemsPerPage)" v-on:page-changed="fetchData" ></Pagination>
+                  
                 </form>
+                
             </div>
 
             <div class="col-12 col-md-4">
-                
                 <ListaCompara :produtos="listaProdutos" />
                 
             </div>
@@ -79,30 +92,30 @@
         <div class="col text-end">
             <button type="button" class="btn btn-dark hover ">Salvar</button>
         </div>
+        
 
     </div>
 </template>
 
 <script lang="ts">
 import Total from '@/components/Total.vue'
-import api from '@/http/index'
-import router from '@/router'
 import Navbar from '../components/HeaderTemplate.vue'
 import ListaCompara from '../components/ListaCompara.vue'
 import IProduto from '../interfaces/IProduto'
 import EditarListaProduto from '../components/EditarListaProduto.vue'
-import { defineComponent } from 'vue'
+import { defineComponent, VueElement } from 'vue'
+import Cookies from 'js-cookie'
+import axios from 'axios'
+import Pagination from '@/components/Pagination.vue'
 export default defineComponent({
     name: "ListaProduto",
-    emits: ["aoCarregarLista"],
     components: {
         Navbar,
         ListaCompara,
         EditarListaProduto,
-        Total
-    },
-    props: {
-        id: Number
+        Total,
+        Pagination
+
     },
     data() {
         return {
@@ -132,28 +145,67 @@ export default defineComponent({
                 imagem: "https://images-americanas.b2w.io/produtos/01/00/img/6889/6/6889656_1GG.jpg",
                 descricao: "90g",
                 marcaProduto: "FiniStore"
-            }] as IProduto[],
+            },
+            {
+                id: 4,
+                produto: "Fini Dentaduras",
+                preco: "6.99",
+                quantidade: 10,
+                imagem: "https://images-americanas.b2w.io/produtos/01/00/img/6889/6/6889656_1GG.jpg",
+                descricao: "90g",
+                marcaProduto: "FiniStore"
+            },
+            {
+                id: 3,
+                produto: "Fini Dentaduras",
+                preco: "6.99",
+                quantidade: 10,
+                imagem: "https://images-americanas.b2w.io/produtos/01/00/img/6889/6/6889656_1GG.jpg",
+                descricao: "90g",
+                marcaProduto: "FiniStore"
+            },
+            {
+                id: 3,
+                produto: "Fini Dentaduras",
+                preco: "6.99",
+                quantidade: 10,
+                imagem: "https://images-americanas.b2w.io/produtos/01/00/img/6889/6/6889656_1GG.jpg",
+                descricao: "90g",
+                marcaProduto: "FiniStore"
+            }
+        ] as IProduto[],
             searchTerm: '',
             filteredList: [] as IProduto[],
-            dadoRecebido: null
+            dadoRecebido: null,
+            listaId: Cookies.get('lista'),
+            currentPage: 1,
+            totalItems: 0,
+            itemsPerPage: "3",
+            itemsToShow: [] as IProduto []
+            
+        } 
+    },
+    created() {
+        this.listaId = "1"
+        if (this.listaId !== undefined) {
+            this.getLista(this.listaId);
+            this.filteredList = this.listaProdutos
+            this.totalItems = this.filteredList.length
+            this.fetchData(this.currentPage)
         }
-    },
-    async created() {
         
-        this.filteredList = this.listaProdutos;
-        
-    },
-    computed: {
         
     },
     methods: {
-        
         listaEstaVazia(listaProdutos: Array<IProduto>) {
                 return listaProdutos.length === 0
         },
         searchList(){
             if(this.searchTerm == '') {
+                
                 this.filteredList = this.listaProdutos
+            
+
             }
             else{
                 this.filteredList = []
@@ -163,17 +215,29 @@ export default defineComponent({
                         this.filteredList.push(produto)
                     }
                 });
-
-                
             }
         },
-        async recebeLista(){
+
+        async getLista(id : string){
+          
             try {
-            const response = await fetch('http://localhost:8080/listaProdutos/${id}')
-            const data = await response.json()
-                this.listaProdutos = data
-            } catch (error) {
-            console.error(error)
+                const token = Cookies.get("token")
+                const headers = {
+                    'Authorization': `Bearer ${token}`
+                };
+
+                axios.post('http://localhost:8080/listaProdutos', id, { headers })
+                .then(response => {
+                    const data = response.data;
+                    console.log(data);
+                    this.listaProdutos = data;
+                })
+                .catch(error => {
+                    console.log('Erro:', error);
+                });
+            }
+            catch{
+                console.log("Erro ao carregar lista.")
             }
         },
         atualizarQuantidade(id: number, index: number, novaQuantidade: number) {
@@ -183,15 +247,38 @@ export default defineComponent({
                 
             this.listaProdutos[index].quantidade = produto.quantidade
             this.filteredList[index].quantidade = produto.quantidade
+            /*const produto = this.listaProdutos.find(p => p.id === id);
+            if (produto) {
+                produto.quantidade = novaQuantidade;
+            }*/
             
+        },
+        fetchData(page : any) {
+            // calcula o índice do primeiro e do último item a serem exibidos na página selecionada
+            const firstItem = (page - 1) * parseInt(this.itemsPerPage);
+            const lastItem = firstItem + parseInt(this.itemsPerPage);
+
+            // atualiza o estado do componente para exibir apenas os itens correspondentes à página selecionada
+            this.itemsToShow = this.filteredList.slice(firstItem, lastItem);
+
+            // atualiza a página atual
+            this.currentPage = page;
         }
+        
     }
         
 
     })
 </script>
+
 <style scoped>
     th, td {
   vertical-align: middle; /* alinhamento vertical */
 }
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
 </style>

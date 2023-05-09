@@ -78,6 +78,7 @@
     import Teste from './Teste.vue'
     import api from '@/http/index'
     import router from '@/router'
+    import Cookies from 'js-cookie';
 
     export default defineComponent({
         // eslint-disable-next-line vue/multi-word-component-names
@@ -101,9 +102,11 @@
             async validaUsuario(){
                 await api.post('auth', {'email':this.email, 'senha':this.senha})
                     .then((response) => {
-                        console.log(response.data),
+                        Cookies.set('token', response.data.token, {secure:true, httpOnly: false})
+                        Cookies.set('email', this.email)
+                        console.log(Cookies.get('token'))
+                        //console.log(response.data),
                         router.push('/')
-
                     })
                     .catch((err) => console.log("Erro: "+ err))
                 
