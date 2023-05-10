@@ -37,7 +37,7 @@
                                 </tbody>
                             </table>
                             <button type="button" class="btn" @click="removeProduto()">-</button>
-                            <input type="text" class="text-center" v-model="quantidade"/>
+                            <input type="number"  class="text-center input-quantidade" v-model="quantidade"/>
                             <button type="button" class="btn" @click="addProduto()">+</button>
                             <button type="button" class="update-button" @click="emitirQuantidade"  data-bs-dismiss="modal" aria-label="Close">Atualizar</button>
 
@@ -105,5 +105,12 @@ import { defineComponent ,PropType } from 'vue';
     border: none;
     font-size: 16px;
     cursor: pointer;
-}
+    }
+
+
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+    }
 </style>

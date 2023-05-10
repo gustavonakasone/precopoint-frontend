@@ -95,19 +95,19 @@
 .pagination a {
   display: inline-block;
   padding: 8px 16px;
-  color: #007bff;
+  color: #ffc107;
   text-decoration: none;
-  border: 1px solid #007bff;
+  border: 1px solid #ffc107;
   border-radius: 4px;
 }
 
 .pagination a:hover {
-  background-color: #007bff;
+  background-color: #ffc107;
   color: #fff;
 }
 
 .pagination .active a {
-  background-color: #007bff;
+  background-color: #ffc107;
   color: #fff;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
     <Navbar />
-    <div class="container mt-4">
+    <div class="container mt-4" v-if="loadPage">
         <div class="row">
             <div class="col">
                 <div class="d-flex justify-content-between mt-4 mb-4">
@@ -9,7 +9,7 @@
                     <div class="text-center mx-auto text-uppercase"> 
                     <span class="h1 text-warning fw-bold">listas de produtos</span>
                     </div>
-                    <button type="button" class="btn btn-dark hover mb-2" :disabled="listaProdutos.length === 0">Baixar Lista</button>
+                    <geraPDF :products="filteredList" :disabled="listaProdutos.length === 0"/>
 
                 </div>
             </div>
@@ -39,7 +39,6 @@
                 <table class="table table-bordered" >
                     <thead class="table-dark text-center">
                     <tr>
-                        <th scope="col">#</th>
                         <th scope="col">Imagem</th>
                         <th scope="col">Produto</th>
                         <th scope="col">Detalhes</th>
@@ -50,7 +49,7 @@
                     </thead>
                     <tbody v-if="filteredList.length > 0">
                         <tr v-for="(produto, index) in itemsToShow" :key="index" class="table-light table-hover text-center">
-                          <th scope="row">{{ index + 1 }}</th>
+                          
                           <td><img v-bind:src="produto.imagem" width="30" height="30"></td>
                           <td style="text-align:left">{{ produto.produto }}</td>
                           <td>{{ produto.descricao }}</td>
@@ -75,7 +74,7 @@
                 </table>
                 <Total :produtos="listaProdutos"/>
                 
-                <Pagination :currentPage="currentPage" :totalItems="totalItems" :itemsPerPage="parseInt(itemsPerPage)" v-on:page-changed="fetchData" ></Pagination>
+                <Pagination :key="paginationKey" :currentPage="currentPage" :totalItems="totalItems" :itemsPerPage="parseInt(itemsPerPage)" v-on:page-changed="fetchData" ></Pagination>
                   
                 </form>
                 
@@ -88,13 +87,16 @@
         </div>
         <!--container-->
     </div>
-    <div class="container">
+    <div class="container" v-if="loadPage">
         <div class="col text-end">
             <button type="button" class="btn btn-dark hover ">Salvar</button>
         </div>
         
 
     </div>
+    <div v-if="!loadPage" class="d-flex align-items-center justify-content-center" style="height: 50vh;">
+        <span class="h4 text-muted">Nenhuma lista foi encontrada</span>
+    </div>       
 </template>
 
 <script lang="ts">
@@ -107,6 +109,8 @@ import { defineComponent, VueElement } from 'vue'
 import Cookies from 'js-cookie'
 import axios from 'axios'
 import Pagination from '@/components/Pagination.vue'
+import geraPDF from '@/components/geraPDF.vue'
+
 export default defineComponent({
     name: "ListaProduto",
     components: {
@@ -114,7 +118,8 @@ export default defineComponent({
         ListaCompara,
         EditarListaProduto,
         Total,
-        Pagination
+        Pagination,
+        geraPDF
 
     },
     data() {
@@ -156,7 +161,7 @@ export default defineComponent({
                 marcaProduto: "FiniStore"
             },
             {
-                id: 3,
+                id: 5,
                 produto: "Fini Dentaduras",
                 preco: "6.99",
                 quantidade: 10,
@@ -165,7 +170,7 @@ export default defineComponent({
                 marcaProduto: "FiniStore"
             },
             {
-                id: 3,
+                id: 6,
                 produto: "Fini Dentaduras",
                 preco: "6.99",
                 quantidade: 10,
@@ -181,7 +186,9 @@ export default defineComponent({
             currentPage: 1,
             totalItems: 0,
             itemsPerPage: "3",
-            itemsToShow: [] as IProduto []
+            itemsToShow: [] as IProduto [],
+            loadPage: true,
+            paginationKey: 1
             
         } 
     },
@@ -192,6 +199,8 @@ export default defineComponent({
             this.filteredList = this.listaProdutos
             this.totalItems = this.filteredList.length
             this.fetchData(this.currentPage)
+        } else{
+            this.loadPage = false
         }
         
         
@@ -204,7 +213,9 @@ export default defineComponent({
             if(this.searchTerm == '') {
                 
                 this.filteredList = this.listaProdutos
-            
+                
+                this.updateData()
+                this.fetchData(this.currentPage)
 
             }
             else{
@@ -215,6 +226,9 @@ export default defineComponent({
                         this.filteredList.push(produto)
                     }
                 });
+                
+                this.updateData()
+                this.fetchData(this.currentPage)
             }
         },
 
@@ -247,12 +261,15 @@ export default defineComponent({
                 
             this.listaProdutos[index].quantidade = produto.quantidade
             this.filteredList[index].quantidade = produto.quantidade
+            this.fetchData(this.currentPage)
             /*const produto = this.listaProdutos.find(p => p.id === id);
             if (produto) {
                 produto.quantidade = novaQuantidade;
             }*/
             
         },
+
+
         fetchData(page : any) {
             // calcula o índice do primeiro e do último item a serem exibidos na página selecionada
             const firstItem = (page - 1) * parseInt(this.itemsPerPage);
@@ -263,6 +280,11 @@ export default defineComponent({
 
             // atualiza a página atual
             this.currentPage = page;
+        },
+        updateData() {
+            // altera o valor da chave para forçar o componente ser carregado novamente
+            this.totalItems = this.filteredList.length
+            this.paginationKey++
         }
         
     }
